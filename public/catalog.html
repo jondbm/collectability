@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog - Collectibles Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="upload.html">Upload</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Catalog of Collectibles</h2>
+        <div id="catalog-grid">
+            <!-- Collectible items will be displayed here -->
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Collectibles Catalog</p>
+    </footer>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/catalog')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Catalog data:', data)
+        const catalogGrid = document.getElementById('catalog-grid');
+        catalogGrid.innerHTML = '';
+        data.forEach(collectible => {
+            const collectibleDiv = document.createElement('div');
+            collectibleDiv.className = 'collectible-item';
+            collectibleDiv.innerHTML = `
+                <img src="${collectible.image}" alt="Collectible Image">
+                <h3>${collectible.description}</h3>
+                <p>Price: $${collectible.price}</p>
+                <button class="buy-button">Buy</button>
+                <button class="edit-button" onclick="editItem(${collectible.id})">Edit</button>
+                <button class="delete-button" onclick="deleteItem(${collectible.id})">Delete</button>
+            `;
+            catalogGrid.appendChild(collectibleDiv);
+        });
+    })
+    .catch(error => console.error('Fetch error:', error));
+});
+
+function editItem(itemId) {
+    window.location.href = '/edit.html?id=' + itemId;
+}
+
+function deleteItem(itemId) {
+    fetch('/api/catalog/' + itemId, { method: 'DELETE' })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Item deleted:', data);
+        window.location.reload();
+    })
+    .catch(error => console.error('Error deleting item:', error));
+}
+</script>
+</body>
+</html>

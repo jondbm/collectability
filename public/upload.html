@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Collectible - Collectibles Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="upload.html">Upload</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Upload New Collectible</h2>
+        <form id="upload-form">
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*"><br><br>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea><br><br>
+            <label for="price">Price ($):</label>
+            <input type="text" id="price" name="price" pattern="^\d*(\.\d{0,2})?$" title="Please enter a valid price with up to two decimal places."><br><br>
+            <button type="submit">Upload Collectible</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2024 Collectibles Catalog</p>
+    </footer>
+    <script>
+    // JavaScript for handling the upload form submission and providing user feedback
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadForm = document.getElementById('upload-form');
+        
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the default form submission
+            
+            const formData = new FormData(uploadForm);
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Display success message to the user
+                    alert('Upload successful: ' + data.message);
+                    window.location.href = '/catalog.html'; // Redirect to the catalog page
+                } else {
+                    // Display error message to the user
+                    alert('Upload failed.');
+                }
+            })
+            .catch(error => {
+                // Display error message to the user
+                alert('Error: ' + error.message);
+            });
+        });
+    });
+    </script>
+</body>
+</html>

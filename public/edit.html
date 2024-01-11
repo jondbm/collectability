@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Collectible - Collectibles Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="upload.html">Upload</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Edit Collectible</h2>
+        <form id="edit-form">
+            <!-- Image input might need to handle existing image display -->
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*"><br><br>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea><br><br>
+            <label for="price">Price ($):</label>
+            <input type="text" id="price" name="price" pattern="^\d+(\.\d{0,2})?$" title="Please enter a valid price with up to two decimal places.">
+            <button type="submit">Update Collectible</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2024 Collectibles Catalog</p>
+    </footer>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const itemId = urlParams.get('id');
+    
+    // Fetch the item details to pre-fill the form
+    fetch('/api/catalog/item/' + itemId)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('description').value = data.description;
+        document.getElementById('price').value = data.price;
+        // Note: Handling image preview might require additional logic
+    })
+    .catch(error => console.error('Error fetching item:', error));
+
+    // Handle form submission
+    
+document.getElementById('edit-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    formData.append('id', itemId); // Append the item ID
+
+    const imageInput = document.getElementById('image');
+    if (imageInput.files.length === 0) {
+        formData.delete('image');
+    }
+
+    fetch('/api/edit', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert('Item updated successfully');
+            window.location.href = '/catalog.html'; // Redirect to the catalog page
+        })
+        .catch(error => alert('Error updating item:', error));
+    });
+});
+</script>
+</body>
+</html>
